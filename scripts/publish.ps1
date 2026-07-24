@@ -3,6 +3,9 @@ $dotnet = 'C:\Program Files\dotnet\dotnet.exe'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $publishOutput = Join-Path $projectRoot 'publish\win-x64'
 
+if (Test-Path -LiteralPath $publishOutput) {
+    Remove-Item -LiteralPath $publishOutput -Recurse -Force
+}
 New-Item -ItemType Directory -Force -Path $publishOutput | Out-Null
 
 & $dotnet publish (Join-Path $projectRoot 'src\CUSTOM_PS2xOnline.App\CUSTOM_PS2xOnline.App.csproj') --configuration Release --runtime win-x64 --self-contained true -p:PublishSingleFile=false -o $publishOutput

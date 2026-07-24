@@ -2,6 +2,7 @@ using CUSTOM_PS2xOnline.App.ViewModels;
 using CUSTOM_PS2xOnline.Core.Interfaces;
 using CUSTOM_PS2xOnline.Core.Models;
 using CUSTOM_PS2xOnline.Infrastructure.Services;
+using CUSTOM_PS2xOnline.Network.Services;
 using FluentAssertions;
 
 namespace CUSTOM_PS2xOnline.Tests;
@@ -54,7 +55,12 @@ public sealed class AppSettingsTests : IDisposable
         {
             Settings = new AppSettingsModel { Language = "en-US" }
         };
-        var viewModel = new MainViewModel(service);
+        var viewModel = new MainViewModel(
+            service,
+            new GameLibraryService(),
+            new FakeLauncherService(),
+            new FakeNetworkStatusService(),
+            new RoomSessionService());
 
         viewModel.Language.Should().Be("en-US");
         viewModel.GameFolder = @"D:\Games";
@@ -79,5 +85,17 @@ public sealed class AppSettingsTests : IDisposable
         public AppSettingsModel Load() => Settings;
 
         public void Save(AppSettingsModel settings) => Settings = settings;
+    }
+
+    private sealed class FakeLauncherService : IPcsx2LauncherService
+    {
+        public bool IsReady(string executablePath) => false;
+        public void Launch(string executablePath, string gamePath, bool fullscreen) { }
+    }
+
+    private sealed class FakeNetworkStatusService : INetworkStatusService
+    {
+        public Task<NetworkStatus> CheckAsync(CancellationToken cancellationToken = default) =>
+            Task.FromResult(new NetworkStatus(true, 10));
     }
 }

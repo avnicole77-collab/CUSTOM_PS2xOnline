@@ -6,10 +6,15 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>..\..\assets\icon.ico</ApplicationIcon>
+    <AssemblyName>CUSTOM_PS2xOnline.App</AssemblyName>
+    <Version>1.0.0</Version>
+    <Authors>CUSTOM PS2xOnline</Authors>
+    <Product>CUSTOM PS2xOnline</Product>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.10" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.10" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="10.0.0" />
