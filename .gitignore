@@ -1,0 +1,7 @@
+node_modules/
+release/
+smoke-test-data/
+pnpm-lock.yaml
+pnpm-workspace.yaml
+*.log
+.DS_Store

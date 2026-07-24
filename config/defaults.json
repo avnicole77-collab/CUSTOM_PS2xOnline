@@ -1,0 +1,16 @@
+{
+  "appName": "BOSSMASTER AI CHAT & BATCH",
+  "language": "th",
+  "theme": "dark",
+  "defaultMode": "normal",
+  "defaultProvider": "openai",
+  "defaultBatchSize": 3,
+  "defaultConcurrency": 1,
+  "defaultRetry": 3,
+  "maxBatchSize": 6,
+  "defaultDelayMs": 2500,
+  "checkpointEvery": 1,
+  "maxAttachmentTextChars": 250000,
+  "autoSave": true,
+  "storeRemoteResponses": false
+}
