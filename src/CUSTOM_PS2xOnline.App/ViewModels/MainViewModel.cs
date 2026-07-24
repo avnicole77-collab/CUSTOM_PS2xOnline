@@ -29,6 +29,7 @@ public sealed class MainViewModel : ObservableObject
     private string _roomCode = string.Empty;
     private string _activeRoomCode = "None";
     private string _pcsx2Status = "PCSX2: Not configured";
+    private string _biosStatus = "BIOS: Not configured";
 
     public MainViewModel(
         IAppSettingsService settingsService,
@@ -50,6 +51,7 @@ public sealed class MainViewModel : ObservableObject
         CreateRoomCommand = new RelayCommand(CreateRoom);
         JoinRoomCommand = new RelayCommand(JoinRoom);
         RefreshStatusCommand = new AsyncRelayCommand(RefreshStatusAsync);
+        DetectPcsx2Command = new RelayCommand(DetectPcsx2);
 
         LoadSettings();
         ScanGames();
@@ -71,6 +73,7 @@ public sealed class MainViewModel : ObservableObject
     public string RoomCode { get => _roomCode; set => SetProperty(ref _roomCode, value); }
     public string ActiveRoomCode { get => _activeRoomCode; set => SetProperty(ref _activeRoomCode, value); }
     public string Pcsx2Status { get => _pcsx2Status; set => SetProperty(ref _pcsx2Status, value); }
+    public string BiosStatus { get => _biosStatus; set => SetProperty(ref _biosStatus, value); }
 
     public GameEntry? SelectedGame
     {
@@ -91,6 +94,7 @@ public sealed class MainViewModel : ObservableObject
     public ICommand CreateRoomCommand { get; }
     public ICommand JoinRoomCommand { get; }
     public ICommand RefreshStatusCommand { get; }
+    public ICommand DetectPcsx2Command { get; }
 
     private void LoadSettings()
     {
@@ -102,6 +106,10 @@ public sealed class MainViewModel : ObservableObject
         BiosFolder = settings.BiosFolder;
         GameFolder = settings.GameFolder;
         DefaultFullscreen = settings.DefaultFullscreen;
+        if (string.IsNullOrWhiteSpace(Pcsx2ExecutablePath))
+        {
+            Pcsx2ExecutablePath = _launcherService.FindInstalledExecutable() ?? string.Empty;
+        }
         UpdatePcsx2Status();
         StatusText = "Settings loaded";
     }
@@ -197,5 +205,47 @@ public sealed class MainViewModel : ObservableObject
             ? "PCSX2: Ready"
             : "PCSX2: Not configured";
         (LaunchSelectedGameCommand as RelayCommand)?.NotifyCanExecuteChanged();
+        BiosStatus = HasBiosFiles(BiosFolder)
+            ? "BIOS: Detected"
+            : "BIOS: Required";
+    }
+
+    private void DetectPcsx2()
+    {
+        var detectedPath = _launcherService.FindInstalledExecutable();
+        if (detectedPath is null)
+        {
+            StatusText = "PCSX2 is not installed yet";
+            return;
+        }
+
+        Pcsx2ExecutablePath = detectedPath;
+        UpdatePcsx2Status();
+        SaveSettings();
+        StatusText = "PCSX2 detected and saved";
+    }
+
+    private static bool HasBiosFiles(string folderPath)
+    {
+        if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
+        {
+            return false;
+        }
+
+        try
+        {
+            return Directory.EnumerateFiles(folderPath)
+                .Any(path =>
+                    string.Equals(Path.GetExtension(path), ".bin", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(Path.GetExtension(path), ".rom", StringComparison.OrdinalIgnoreCase));
+        }
+        catch (IOException)
+        {
+            return false;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return false;
+        }
     }
 }

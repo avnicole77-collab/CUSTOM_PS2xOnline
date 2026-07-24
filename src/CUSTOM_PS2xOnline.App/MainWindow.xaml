@@ -65,6 +65,7 @@
                         <TextBlock Text="Launcher Status" FontSize="20" FontWeight="Bold" Foreground="#FFFFFF" />
                         <TextBlock Text="{Binding StatusText}" Foreground="#35C978" Margin="0,12,0,0" />
                         <TextBlock Text="{Binding Pcsx2Status}" Foreground="#35C978" />
+                        <TextBlock Text="{Binding BiosStatus}" Foreground="#35C978" />
                         <TextBlock Text="{Binding NetworkStatus}" Foreground="#35C978" />
                         <TextBlock Text="{Binding ActiveRoomCode, StringFormat=Active room: {0}}" Foreground="#AAB2C5" />
                         <Separator Margin="0,16,0,12" Background="#1B2030" />
@@ -73,6 +74,7 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="150" />
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
@@ -83,6 +85,7 @@
                             <TextBlock Grid.Row="0" Text="PCSX2 executable" Foreground="#AAB2C5" VerticalAlignment="Center" />
                             <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Pcsx2ExecutablePath, UpdateSourceTrigger=PropertyChanged}" Margin="8,3" />
                             <Button Grid.Row="0" Grid.Column="2" Content="Browse" Click="BrowsePcsx2_Click" Padding="10,4" Margin="4,3" />
+                            <Button Grid.Row="0" Grid.Column="3" Content="Detect" Command="{Binding DetectPcsx2Command}" Padding="10,4" Margin="4,3" />
                             <TextBlock Grid.Row="1" Text="BIOS folder" Foreground="#AAB2C5" VerticalAlignment="Center" />
                             <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding BiosFolder, UpdateSourceTrigger=PropertyChanged}" Margin="8,3" />
                             <Button Grid.Row="1" Grid.Column="2" Content="Browse" Click="BrowseBios_Click" Padding="10,4" Margin="4,3" />

@@ -90,6 +90,7 @@ public sealed class AppSettingsTests : IDisposable
     private sealed class FakeLauncherService : IPcsx2LauncherService
     {
         public bool IsReady(string executablePath) => false;
+        public string? FindInstalledExecutable() => null;
         public void Launch(string executablePath, string gamePath, bool fullscreen) { }
     }
 

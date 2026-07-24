@@ -10,6 +10,18 @@ public sealed class Pcsx2LauncherService : IPcsx2LauncherService
         && File.Exists(executablePath)
         && string.Equals(Path.GetExtension(executablePath), ".exe", StringComparison.OrdinalIgnoreCase);
 
+    public string? FindInstalledExecutable()
+    {
+        var candidates = new[]
+        {
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "PCSX2", "pcsx2-qt.exe"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "PCSX2 2.0", "pcsx2-qt.exe"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs", "PCSX2", "pcsx2-qt.exe")
+        };
+
+        return candidates.FirstOrDefault(File.Exists);
+    }
+
     public void Launch(string executablePath, string gamePath, bool fullscreen)
     {
         if (!IsReady(executablePath))
