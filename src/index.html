@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'none';" />
+  <title>BOSSMASTER AI CHAT & BATCH</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="toastHost"></div>
+
+  <section id="authScreen" class="auth-screen">
+    <div class="auth-card glass">
+      <div class="brand-mark">B</div>
+      <h1>BOSSMASTER AI</h1>
+      <p>CHAT & BATCH for Windows</p>
+      <div id="ownerFields" class="hidden">
+        <label>ชื่อแสดงผล<input id="displayName" autocomplete="name" placeholder="ชื่อของคุณ" /></label>
+      </div>
+      <label>Username<input id="username" autocomplete="username" placeholder="อย่างน้อย 3 ตัวอักษร" /></label>
+      <label>Password<input id="password" type="password" autocomplete="current-password" placeholder="อย่างน้อย 8 ตัวอักษร" /></label>
+      <button id="authButton" class="primary wide">เข้าสู่ระบบ</button>
+      <div id="authHint" class="hint"></div>
+    </div>
+  </section>
+
+  <div id="appShell" class="app-shell hidden">
+    <header class="topbar">
+      <div class="brand"><div class="brand-mark small">B</div><div><strong>BOSSMASTER</strong><span>AI CHAT & BATCH</span></div></div>
+      <nav class="mode-tabs">
+        <button data-mode="normal" class="mode active">💬 แชทธรรมดา</button>
+        <button data-mode="code" class="mode">&lt;/&gt; เขียนโค้ด</button>
+        <button data-mode="batch" class="mode">▦ งานจำนวนมาก</button>
+        <button data-mode="notepad" class="mode">▤ Notepad</button>
+      </nav>
+      <div class="top-actions">
+        <select id="providerSelect"><option value="openai">OpenAI (GPT)</option><option value="gemini">Gemini</option></select>
+        <select id="modelSelect"><option value="">เลือกโมเดล</option></select>
+        <button id="refreshModels" title="โหลดรายชื่อโมเดล">↻</button>
+        <button id="settingsButton" title="ตั้งค่า">⚙</button>
+        <button id="logoutButton" title="ออกจากระบบ">⇥</button>
+      </div>
+    </header>
+
+    <aside class="sidebar">
+      <button id="newRoomButton" class="primary wide">＋ แชทใหม่</button>
+      <button id="newBatchButton" class="accent wide hidden">＋ งาน Batch ใหม่</button>
+      <div class="search-box">⌕ <input id="roomSearch" placeholder="ค้นหาห้องสนทนา..." /></div>
+      <div class="side-section">
+        <h3>ห้องสนทนา <span id="roomCount">0</span></h3>
+        <div id="roomList" class="room-list"></div>
+      </div>
+      <div class="side-section projects">
+        <h3>พื้นที่ทำงาน</h3>
+        <button>▣ โปรเจกต์</button><button>⌁ ไฟล์ล่าสุด</button><button>⚠ งานผิดพลาด</button><button>♲ ถังขยะ</button>
+      </div>
+      <div class="user-card"><div class="avatar" id="avatar">O</div><div><strong id="displayUser">Owner</strong><span id="roleUser">owner</span></div><i class="online"></i></div>
+    </aside>
+
+    <main class="workspace">
+      <section id="chatView" class="view chat-view">
+        <div class="workspace-head">
+          <div><h2 id="roomTitle">แชทใหม่</h2><p id="roomSubtitle">คุยกับ AI ได้ตามปกติ แนบไฟล์และโค้ดได้</p></div>
+          <div class="head-actions"><button id="renameRoom">✎ เปลี่ยนชื่อ</button><button id="deleteRoom">⌫ ลบ</button></div>
+        </div>
+        <div id="codeWorkspacePanel" class="code-workspace-panel collapsed hidden">
+          <div class="code-toolbar">
+            <button id="openCodeFolder" type="button">เปิดโฟลเดอร์</button>
+            <input id="codeSearch" placeholder="ค้นหาในโปรเจกต์" />
+            <button id="searchCodeButton" type="button">ค้นหา</button>
+            <span id="codeRoot">ยังไม่ได้เปิดโปรเจกต์</span>
+            <button id="toggleCodePanel" type="button">ขยายพื้นที่</button>
+          </div>
+          <div class="code-columns">
+            <select id="codeFileList" size="8"></select>
+            <div>
+              <div id="codeFilePath" class="hint">เลือกไฟล์เพื่ออ่าน</div>
+              <textarea id="codeEditor" rows="10" spellcheck="false"></textarea>
+              <div class="dialog-actions"><button id="attachCodeToChat" type="button">แนบเข้าแชท</button><button id="saveCodeFile" type="button" class="danger">ตรวจและบันทึกไฟล์</button></div>
+            </div>
+          </div>
+          <div id="codeSearchResults" class="hint"></div>
+        </div>
+        <div id="messageList" class="messages">
+          <div class="welcome">
+            <div class="ai-orb">AI</div>
+            <h2>พร้อมช่วยงานของคุณ</h2>
+            <p>เลือกแชทธรรมดา เขียนโค้ด หรืองานจำนวนมากจากแถบด้านบน</p>
+          </div>
+        </div>
+        <div class="composer-wrap">
+          <div id="attachmentList" class="attachment-list"></div>
+          <textarea id="composer" placeholder="พิมพ์ข้อความ วางโค้ดยาว หรือแนบไฟล์..." rows="3"></textarea>
+          <div class="composer-bar">
+            <div><button id="attachButton">📎 แนบไฟล์</button><button id="clearAttachments">ล้างไฟล์</button></div>
+            <div class="send-side"><span id="charCount">0 ตัวอักษร</span><button id="sendButton" class="primary">ส่ง ➤</button><button id="stopButton" class="danger hidden">หยุดตอบ</button></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="notepadView" class="view notepad-view hidden">
+        <div class="workspace-head">
+          <div><h2>Notepad ส่วนตัว</h2><p>เก็บข้อความส่วนตัวในเครื่อง แยกตามบัญชี และไม่ส่งเข้า AI</p></div>
+          <div class="head-actions"><button id="copyNote">⧉ คัดลอก</button><button id="clearNote" class="danger">⌫ ล้างโน้ต</button></div>
+        </div>
+        <div class="notepad-editor-wrap">
+          <textarea id="notepadEditor" spellcheck="true" placeholder="เขียนโน้ต คำสั่ง รายการงาน หรือข้อความที่ต้องการเก็บไว้ที่นี่..."></textarea>
+        </div>
+        <div class="notepad-status">
+          <span id="notepadSaveStatus">พร้อมใช้งาน</span>
+          <span id="notepadCharCount">0 ตัวอักษร</span>
+        </div>
+      </section>
+
+      <section id="batchView" class="view batch-view hidden">
+        <div class="workspace-head">
+          <div><h2 id="jobTitle">ยังไม่ได้เลือกงาน Batch</h2><p id="jobSubtitle">นำเข้า CSV/XLSX/JSON แล้วกำหนดให้ทำครั้งละ 1–3 รายการ</p></div>
+          <div class="head-actions"><button id="batchStart" class="success">▶ เริ่ม/ทำต่อ</button><button id="batchPause">Ⅱ พัก</button><button id="batchRetryFailed">↻ ลองใหม่เฉพาะ FAIL</button><button id="batchCancel" class="danger">■ หยุด</button><button id="batchExport">⇩ ส่งออก</button></div>
+        </div>
+        <div class="stats-grid">
+          <div><span>ทั้งหมด</span><strong id="statTotal">0</strong></div><div><span>สำเร็จ</span><strong id="statSuccess">0</strong></div><div><span>กำลังทำ</span><strong id="statRunning">0</strong></div><div><span>รอทำ</span><strong id="statPending">0</strong></div><div><span>ผิดพลาด</span><strong id="statFailed">0</strong></div><div><span>ความคืบหน้า</span><strong id="statPercent">0%</strong></div>
+        </div>
+        <div class="progress"><i id="jobProgress"></i></div>
+        <div class="batch-toolbar"><button id="openBatchWizard" class="accent">＋ นำเข้างานใหม่</button><select id="jobSelect"><option value="">เลือกงานเดิม</option></select><span id="jobConfigText"></span></div>
+        <div class="table-wrap"><table><thead><tr><th>#</th><th>ข้อมูล</th><th>สถานะ</th><th>Retry</th><th>Error</th></tr></thead><tbody id="jobRows"><tr><td colspan="5" class="empty">ยังไม่มีรายการ</td></tr></tbody></table></div>
+      </section>
+    </main>
+
+    <aside class="inspector">
+      <div class="inspector-tabs"><button class="active">เครื่องมือ</button><button>ข้อมูลห้อง</button></div>
+      <section>
+        <h3>ผู้ช่วย AI</h3>
+        <select id="assistantPreset"><option value="general">ทั่วไป (Default)</option><option value="code">Code Assistant</option><option value="strict">Strict Data Processor</option></select>
+      </section>
+      <section>
+        <h3>System Prompt</h3>
+        <textarea id="systemPrompt" rows="7" placeholder="เว้นว่างสำหรับแชทธรรมดา"></textarea>
+      </section>
+      <section>
+        <h3>ตั้งค่าคำตอบ</h3>
+        <label>Temperature <output id="temperatureValue">0.4</output><input id="temperature" type="range" min="0" max="1" step="0.1" value="0.4" /></label>
+        <label>Max output tokens<input id="maxOutputTokens" type="number" min="256" max="65536" value="4096" /></label>
+      </section>
+      <section class="mode-info" id="modeInfo"><h3>แชทธรรมดา</h3><p>ไม่มีคิว ไม่มี Validator และไม่บังคับรูปแบบผลลัพธ์</p></section>
+    </aside>
+
+    <footer class="statusbar">
+      <span id="connectionStatus">● พร้อมตั้งค่า API</span><span id="contextStatus">ห้อง: -</span><span id="versionStatus">v0.1.0 Alpha</span>
+    </footer>
+  </div>
+
+  <dialog id="settingsDialog">
+    <form method="dialog" class="dialog-card">
+      <div class="dialog-head"><div><h2>ตั้งค่า API</h2><p>Key จะถูกเข้ารหัสด้วยระบบของ Windows</p></div><button value="cancel">✕</button></div>
+      <label>OpenAI API Key<input id="openaiKey" type="password" placeholder="เว้นว่างเพื่อเก็บค่าเดิม" /></label>
+      <label>Gemini API Key<input id="geminiKey" type="password" placeholder="เว้นว่างเพื่อเก็บค่าเดิม" /></label>
+      <div class="form-grid">
+        <label>งบ Token ต่อวัน (0 = ไม่จำกัด)<input id="dailyTokenBudget" type="number" min="0" value="0" /></label>
+        <label>Requests ต่อนาที<input id="requestsPerMinute" type="number" min="1" max="600" value="30" /></label>
+      </div>
+      <div id="keyStatus" class="hint"></div>
+      <details><summary>Log ล่าสุด (ไม่มี API Key)</summary><pre id="logViewer" class="hint"></pre></details>
+      <hr />
+      <h3>ความปลอดภัยและข้อมูล</h3>
+      <div class="form-grid">
+        <label>รหัสผ่านปัจจุบัน<input id="currentPassword" type="password" /></label>
+        <label>รหัสผ่านใหม่<input id="newPassword" type="password" placeholder="อย่างน้อย 8 ตัวอักษร" /></label>
+      </div>
+      <div class="dialog-actions">
+        <button id="changePasswordButton" type="button">เปลี่ยนรหัสผ่าน</button>
+        <button id="backupButton" type="button">สำรองข้อมูล</button>
+        <button id="restoreButton" type="button">กู้คืนข้อมูล</button>
+      </div>
+      <section id="userManagement" class="hidden">
+        <h3>ผู้ใช้งาน</h3>
+        <div class="form-grid">
+          <label>Username<input id="newUsername" /></label>
+          <label>ชื่อแสดงผล<input id="newDisplayName" /></label>
+          <label>Password<input id="newUserPassword" type="password" /></label>
+          <label>บทบาท<select id="newUserRole"><option value="user">User</option><option value="viewer">Viewer</option></select></label>
+        </div>
+        <button id="createUserButton" type="button">สร้างผู้ใช้</button>
+        <div id="userList" class="hint"></div>
+      </section>
+      <div class="dialog-actions"><button value="cancel">ยกเลิก</button><button id="saveSettings" value="default" class="primary">บันทึก</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="batchDialog">
+    <form method="dialog" class="dialog-card large">
+      <div class="dialog-head"><div><h2>สร้างงาน Batch ใหม่</h2><p>เลือกไฟล์ แล้วระบบจะบันทึก Checkpoint ทุกแถว</p></div><button value="cancel">✕</button></div>
+      <div class="form-grid">
+        <label>ชื่องาน<input id="batchName" placeholder="เช่น SEO 500 เรื่อง" /></label>
+        <label>ครั้งละ<select id="batchSize"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select></label>
+        <label>Retry<input id="batchRetry" type="number" min="0" max="10" value="3" /></label>
+        <label>หน่วง (มิลลิวินาที)<input id="batchDelay" type="number" min="0" value="2500" /></label>
+      </div>
+      <label>คำสั่งงาน<textarea id="batchInstruction" rows="8" placeholder="กำหนดกฎและโครงสร้างผลลัพธ์ให้ชัดเจน..."></textarea></label>
+      <div class="form-grid validator-grid">
+        <label>ช่องบังคับ (คั่นด้วยจุลภาค)<input id="batchRequiredFields" placeholder="title, content, meta" /></label>
+        <label>คำต้องห้าม (คั่นด้วยจุลภาคหรือขึ้นบรรทัดใหม่)<textarea id="batchForbiddenTerms" rows="3" placeholder="นี่คือผลลัพธ์, ผมได้วิเคราะห์"></textarea></label>
+        <label>ช่องที่ต้องตรงต้นฉบับ<input id="batchSourceEqualFields" placeholder="code, actor, studio" /></label>
+        <label>ชนิดข้อมูล JSON<input id="batchFieldTypes" placeholder='{"title":"string","tags":"object"}' /></label>
+        <label>อักษรต่ำสุด<input id="batchMinChars" type="number" min="0" value="0" /></label>
+        <label>อักษรสูงสุด<input id="batchMaxChars" type="number" min="0" value="0" /></label>
+        <label>จำนวนคำต่ำสุด<input id="batchMinWords" type="number" min="0" value="0" /></label>
+        <label>จำนวนย่อหน้า (0 = ไม่ตรวจ)<input id="batchParagraphs" type="number" min="0" value="0" /></label>
+      </div>
+      <p class="hint">ระบบจะเพิ่มกฎห้าม Markdown ห้ามคำอธิบาย และบังคับคืน JSON array ให้อัตโนมัติ</p>
+      <div class="dialog-actions"><button value="cancel">ยกเลิก</button><button id="importBatchFile" value="default" class="accent">เลือกไฟล์และสร้างงาน</button></div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
