@@ -60,7 +60,8 @@ public sealed class AppSettingsTests : IDisposable
             new GameLibraryService(),
             new FakeLauncherService(),
             new FakeNetworkStatusService(),
-            new RoomSessionService());
+            new RoomSessionService(),
+            new FakeRemotePlayService());
 
         viewModel.Language.Should().Be("en-US");
         viewModel.GameFolder = @"D:\Games";
@@ -98,5 +99,12 @@ public sealed class AppSettingsTests : IDisposable
     {
         public Task<NetworkStatus> CheckAsync(CancellationToken cancellationToken = default) =>
             Task.FromResult(new NetworkStatus(true, 10));
+    }
+
+    private sealed class FakeRemotePlayService : IRemotePlayService
+    {
+        public bool IsInstalled() => false;
+        public string? FindExecutable() => null;
+        public void Open() { }
     }
 }

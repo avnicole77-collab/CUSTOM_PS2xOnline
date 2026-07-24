@@ -6,6 +6,7 @@ using CUSTOM_PS2xOnline.Infrastructure.Data;
 using CUSTOM_PS2xOnline.Infrastructure.Services;
 using CUSTOM_PS2xOnline.Network.Services;
 using CUSTOM_PS2xOnline.PCSX2.Services;
+using CUSTOM_PS2xOnline.Streaming.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -62,6 +63,7 @@ public partial class App : Application
                 services.AddSingleton<IPcsx2LauncherService, Pcsx2LauncherService>();
                 services.AddSingleton<INetworkStatusService, NetworkStatusService>();
                 services.AddSingleton<IRoomSessionService, RoomSessionService>();
+                services.AddSingleton<IRemotePlayService, ParsecRemotePlayService>();
                 services.AddSingleton<MainViewModel>();
             });
 

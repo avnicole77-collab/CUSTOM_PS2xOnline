@@ -15,6 +15,7 @@ public sealed class MainViewModel : ObservableObject
     private readonly IPcsx2LauncherService _launcherService;
     private readonly INetworkStatusService _networkStatusService;
     private readonly IRoomSessionService _roomSessionService;
+    private readonly IRemotePlayService _remotePlayService;
     private string _statusText = "Ready";
     private string _hostStatus = "Host: Offline";
     private string _networkStatus = "Network: Unknown";
@@ -30,19 +31,22 @@ public sealed class MainViewModel : ObservableObject
     private string _activeRoomCode = "None";
     private string _pcsx2Status = "PCSX2: Not configured";
     private string _biosStatus = "BIOS: Not configured";
+    private string _remotePlayStatus = "Remote Play: Not installed";
 
     public MainViewModel(
         IAppSettingsService settingsService,
         IGameLibraryService gameLibraryService,
         IPcsx2LauncherService launcherService,
         INetworkStatusService networkStatusService,
-        IRoomSessionService roomSessionService)
+        IRoomSessionService roomSessionService,
+        IRemotePlayService remotePlayService)
     {
         _settingsService = settingsService;
         _gameLibraryService = gameLibraryService;
         _launcherService = launcherService;
         _networkStatusService = networkStatusService;
         _roomSessionService = roomSessionService;
+        _remotePlayService = remotePlayService;
 
         LoadSettingsCommand = new RelayCommand(LoadSettings);
         SaveSettingsCommand = new RelayCommand(SaveSettings);
@@ -52,6 +56,7 @@ public sealed class MainViewModel : ObservableObject
         JoinRoomCommand = new RelayCommand(JoinRoom);
         RefreshStatusCommand = new AsyncRelayCommand(RefreshStatusAsync);
         DetectPcsx2Command = new RelayCommand(DetectPcsx2);
+        OpenRemotePlayCommand = new RelayCommand(OpenRemotePlay);
 
         LoadSettings();
         ScanGames();
@@ -74,6 +79,7 @@ public sealed class MainViewModel : ObservableObject
     public string ActiveRoomCode { get => _activeRoomCode; set => SetProperty(ref _activeRoomCode, value); }
     public string Pcsx2Status { get => _pcsx2Status; set => SetProperty(ref _pcsx2Status, value); }
     public string BiosStatus { get => _biosStatus; set => SetProperty(ref _biosStatus, value); }
+    public string RemotePlayStatus { get => _remotePlayStatus; set => SetProperty(ref _remotePlayStatus, value); }
 
     public GameEntry? SelectedGame
     {
@@ -95,6 +101,7 @@ public sealed class MainViewModel : ObservableObject
     public ICommand JoinRoomCommand { get; }
     public ICommand RefreshStatusCommand { get; }
     public ICommand DetectPcsx2Command { get; }
+    public ICommand OpenRemotePlayCommand { get; }
 
     private void LoadSettings()
     {
@@ -208,6 +215,9 @@ public sealed class MainViewModel : ObservableObject
         BiosStatus = HasBiosFiles(BiosFolder)
             ? "BIOS: Detected"
             : "BIOS: Required";
+        RemotePlayStatus = _remotePlayService.IsInstalled()
+            ? "Remote Play: Parsec ready"
+            : "Remote Play: Install Parsec";
     }
 
     private void DetectPcsx2()
@@ -246,6 +256,19 @@ public sealed class MainViewModel : ObservableObject
         catch (UnauthorizedAccessException)
         {
             return false;
+        }
+    }
+
+    private void OpenRemotePlay()
+    {
+        try
+        {
+            _remotePlayService.Open();
+            StatusText = "Parsec opened — share your host link with your friend";
+        }
+        catch (FileNotFoundException)
+        {
+            StatusText = "Install Parsec before starting Remote Play";
         }
     }
 }

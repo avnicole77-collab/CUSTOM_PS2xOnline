@@ -66,6 +66,7 @@
                         <TextBlock Text="{Binding StatusText}" Foreground="#35C978" Margin="0,12,0,0" />
                         <TextBlock Text="{Binding Pcsx2Status}" Foreground="#35C978" />
                         <TextBlock Text="{Binding BiosStatus}" Foreground="#35C978" />
+                        <TextBlock Text="{Binding RemotePlayStatus}" Foreground="#35C978" />
                         <TextBlock Text="{Binding NetworkStatus}" Foreground="#35C978" />
                         <TextBlock Text="{Binding ActiveRoomCode, StringFormat=Active room: {0}}" Foreground="#AAB2C5" />
                         <Separator Margin="0,16,0,12" Background="#1B2030" />
@@ -127,6 +128,7 @@
                                     <Button Content="Create" Command="{Binding CreateRoomCommand}" Padding="10,5" Margin="0,0,8,0" />
                                     <Button Content="Join" Command="{Binding JoinRoomCommand}" Padding="10,5" />
                                 </StackPanel>
+                                <Button Content="Open Parsec Remote Play" Command="{Binding OpenRemotePlayCommand}" Padding="10,6" Margin="0,10,0,0" />
                             </StackPanel>
                         </Grid>
                     </StackPanel>
