@@ -1,0 +1,12 @@
+﻿<Application x:Class="CUSTOM_PS2xOnline.App.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:CUSTOM_PS2xOnline.App">
+    <Application.Resources>
+        <SolidColorBrush x:Key="BackgroundBrush" Color="#0B0D12" />
+        <SolidColorBrush x:Key="SurfaceBrush" Color="#141821" />
+        <SolidColorBrush x:Key="PrimaryBrush" Color="#E83A5F" />
+        <SolidColorBrush x:Key="TextPrimaryBrush" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="TextSecondaryBrush" Color="#AAB2C5" />
+    </Application.Resources>
+</Application>

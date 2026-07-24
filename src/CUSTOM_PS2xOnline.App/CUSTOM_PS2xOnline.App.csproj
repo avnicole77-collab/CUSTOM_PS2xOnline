@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.10" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="10.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CUSTOM_PS2xOnline.Core\CUSTOM_PS2xOnline.Core.csproj" />
+    <ProjectReference Include="..\CUSTOM_PS2xOnline.Infrastructure\CUSTOM_PS2xOnline.Infrastructure.csproj" />
+    <ProjectReference Include="..\CUSTOM_PS2xOnline.PCSX2\CUSTOM_PS2xOnline.PCSX2.csproj" />
+    <ProjectReference Include="..\CUSTOM_PS2xOnline.Network\CUSTOM_PS2xOnline.Network.csproj" />
+    <ProjectReference Include="..\CUSTOM_PS2xOnline.Streaming\CUSTOM_PS2xOnline.Streaming.csproj" />
+    <ProjectReference Include="..\CUSTOM_PS2xOnline.Controllers\CUSTOM_PS2xOnline.Controllers.csproj" />
+    <ProjectReference Include="..\CUSTOM_PS2xOnline.Updater\CUSTOM_PS2xOnline.Updater.csproj" />
+  </ItemGroup>
+
+</Project>
