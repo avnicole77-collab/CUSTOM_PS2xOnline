@@ -1,0 +1,52 @@
+{
+  "name": "bossmaster-ai-chat-batch",
+  "version": "0.1.0",
+  "description": "Custom AI chat and batch desktop application for Windows",
+  "main": "main.js",
+  "author": "BOSSMASTER",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "test": "node --check main.js && node --check preload.js && node --check src/app.js",
+    "dist:win": "electron-builder --win nsis portable",
+    "pack:win": "electron-builder --win dir"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "electron": "^37.2.3",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.bossmaster.ai.chatbatch",
+    "productName": "BOSSMASTER AI CHAT & BATCH",
+    "asar": true,
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "config/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ],
+      "artifactName": "BOSSMASTER_AI_CHAT_BATCH_${version}_${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "BOSSMASTER AI CHAT & BATCH"
+    }
+  }
+}
